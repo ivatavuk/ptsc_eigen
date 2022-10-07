@@ -30,7 +30,7 @@ where $h_i$ is the optimal cost of the $i$-th priority.
 Solution to the $i$-th priority is given by minimizing the $i$-th cost function $E_i(\boldsymbol{x})$, while the cost functions of higher priorities $E_k(\boldsymbol{x}), \forall k < i$ remain in their respective minimums.
 
 ## 📄 Dependences
-This project depends on [`osqp`](https://github.com/ivatavuk/osqp) and [`osqp-eigen`](https://github.com/ivatavuk/osqp-eigen)
+This project depends on [`osqp`](https://github.com/osqp/osqp) and [`osqp-eigen`](https://github.com/robotology/osqp-eigen)
 
 It is recommended to build osqp-eigen from source, with:
 
