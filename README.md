@@ -1,6 +1,6 @@
 # PTSC Eigen
 
-Prioritized Task-Space control solver using the Eigen linear algebry library and the OSQP solver.
+Prioritized Task-Space control solver using the Eigen linear algebry library, OSQP quadratic programming solver and the OsqpEigen wrapper for OSQP.
 
 Implements both [unconstrained](http://www.delasa.net/iros09/) and [constrained](http://www.delasa.net/feature/index.html) version of the Prioritized Task Space Control algorithm by [Martin de Lasa](http://www.delasa.net/) et al. 
 
@@ -52,6 +52,17 @@ to suppress infeasibility warnings.
   ```
 
 ## 🖥️ Using the library
+
+### Including the library in your project
+
+**ptsc-eigen** provides native `CMake` support which allows the library to be easily used in `CMake` projects.
+**ptsc-eigen** exports a CMake target called `PtscEigen::PtscEigen` which can be imported using the `find_package` CMake command and used by calling `target_link_libraries` as in the following example:
+```cmake
+project(myproject)
+find_package(PtscEigen REQUIRED)
+add_executable(example example.cpp)
+target_link_libraries(example PtscEigen::PtscEigen)
+```
 
 ### Minimal example
 
