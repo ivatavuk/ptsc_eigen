@@ -31,7 +31,6 @@ add_library(${LIBRARY_TARGET_NAME}
   src/PtscEigen.cpp
   src/OsqpEigenOptimization.cpp
 )
-#target_include_directories(${LIBRARY_TARGET_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(${LIBRARY_TARGET_NAME}
   PUBLIC OsqpEigen::OsqpEigen
 )
