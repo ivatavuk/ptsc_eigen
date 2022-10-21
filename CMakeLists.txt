@@ -1,18 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ptsc_eigen)
 
-# Find Eigen
-find_package(Eigen3)
-if(NOT EIGEN3_FOUND)
-  # Fallback to cmake_modules
-  find_package(cmake_modules REQUIRED)
-  find_package(Eigen REQUIRED)
-  set(EIGEN3_INCLUDE_DIRS ${EIGEN_INCLUDE_DIRS})
-  set(EIGEN3_LIBRARIES ${EIGEN_LIBRARIES})
-endif()
-
-find_package(osqp REQUIRED)
-
 find_package(OsqpEigen REQUIRED)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -27,53 +15,68 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING
   "Choose the type of build, recommanded options are: Debug or Release" FORCE)
 endif()
 
-include_directories(include
-  ${EIGEN3_INCLUDE_DIR}
+include(CMakePackageConfigHelpers)
+
+include_directories(include)
+
+set(LIBRARY_TARGET_NAME PtscEigen)
+set(LIBRARY_VERSION 0.0)
+set(LIBRARY_HEADERS 
+  include/PtscEigen.hpp 
+  include/QpProblem.hpp
+  include/OsqpEigenOptimization.hpp
 )
 
-set(LIBRARY_TARGET_NAME ptsc_eigen)
 add_library(${LIBRARY_TARGET_NAME}
   src/PtscEigen.cpp
   src/OsqpEigenOptimization.cpp
 )
+#target_include_directories(${LIBRARY_TARGET_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(${LIBRARY_TARGET_NAME}
-  PRIVATE osqp::osqp
-  OsqpEigen::OsqpEigen
+  PUBLIC OsqpEigen::OsqpEigen
 )
-
 install(TARGETS ${LIBRARY_TARGET_NAME}
-  EXPORT  ${PROJECT_NAME}
+  EXPORT  PtscEigenTargets
   COMPONENT runtime
-  LIBRARY       DESTINATION lib                            COMPONENT shlib
-  ARCHIVE       DESTINATION lib                            COMPONENT lib
-  RUNTIME       DESTINATION bin                            COMPONENT bin)
+  LIBRARY   DESTINATION   lib   
+  ARCHIVE   DESTINATION   lib
+  RUNTIME   DESTINATION   bin
+  INCLUDES  DESTINATION   include/${LIBRARY_TARGET_NAME})
 
-install(FILES include/PtscEigen.hpp include/QpProblem.hpp 
+install(FILES ${LIBRARY_HEADERS}
         DESTINATION "include/${LIBRARY_TARGET_NAME}")
 
+install(EXPORT PtscEigenTargets
+  FILE PtscEigenTargets.cmake
+  NAMESPACE PtscEigen::
+  DESTINATION lib/cmake/${LIBRARY_TARGET_NAME})
+
+write_basic_package_version_file(
+  "PtscEigenConfigVersion.cmake"
+  VERSION ${LIBRARY_VERSION}
+  COMPATIBILITY AnyNewerVersion)
+
+install(FILES "cmake/PtscEigenConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/PtscEigenConfigVersion.cmake"
+        DESTINATION lib/cmake/${LIBRARY_TARGET_NAME})
+
+#-----------------tests-----------------
 add_executable(test_example_unconstrained
   tests/test_example_unconstrained.cpp
 )
 target_link_libraries(test_example_unconstrained
-  PRIVATE osqp::osqp
-  OsqpEigen::OsqpEigen
-  ${LIBRARY_TARGET_NAME}
+  PRIVATE ${LIBRARY_TARGET_NAME}
 )
 
 add_executable(test_example_bound_constrained
   tests/test_example_bound_constrained.cpp
 )
 target_link_libraries(test_example_bound_constrained
-  PRIVATE osqp::osqp
-  OsqpEigen::OsqpEigen
-  ${LIBRARY_TARGET_NAME}
+  PRIVATE ${LIBRARY_TARGET_NAME}
 )
 
 add_executable(test_example_fully_constrained
   tests/test_example_fully_constrained.cpp
 )
 target_link_libraries(test_example_fully_constrained
-  PRIVATE osqp::osqp
-  OsqpEigen::OsqpEigen
-  ${LIBRARY_TARGET_NAME}
+  PRIVATE ${LIBRARY_TARGET_NAME}
 )
