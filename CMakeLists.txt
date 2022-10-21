@@ -58,6 +58,10 @@ write_basic_package_version_file(
 install(FILES "cmake/PtscEigenConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/PtscEigenConfigVersion.cmake"
         DESTINATION lib/cmake/${LIBRARY_TARGET_NAME})
 
+add_custom_target(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/uninstall.cmake"
+)
+
 #-----------------tests-----------------
 add_executable(test_example_unconstrained
   tests/test_example_unconstrained.cpp
