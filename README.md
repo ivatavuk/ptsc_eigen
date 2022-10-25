@@ -55,8 +55,8 @@ to suppress infeasibility warnings.
 
 ### Including the library in your project
 
-**ptsc-eigen** provides native `CMake` support which allows the library to be easily used in `CMake` projects.
-**ptsc-eigen** exports a CMake target called `PtscEigen::PtscEigen` which can be imported using the `find_package` CMake command and used by calling `target_link_libraries` as in the following example:
+**ptsc_eigen** provides native `CMake` support which allows the library to be easily used in `CMake` projects.
+**ptsc_eigen** exports a CMake target called `PtscEigen::PtscEigen` which can be imported using the `find_package` CMake command and used by calling `target_link_libraries` as in the following example:
 ```cmake
 project(myproject)
 find_package(PtscEigen REQUIRED)
