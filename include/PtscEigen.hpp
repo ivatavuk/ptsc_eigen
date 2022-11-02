@@ -48,9 +48,10 @@ public:
   MatNd pseudoinverse();
   MatNd null();
   MatNd A_;
-private:
   MatNd U_, Sigma_, V_;
-
+  VecNd singular_values_;
+  
+private:
   void compute();
   MatNd getSigmaPInv();
 };

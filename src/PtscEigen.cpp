@@ -41,11 +41,11 @@ void SVD::compute()
   svd.compute(A_, Eigen::ComputeFullU | Eigen::ComputeFullV);
   U_ = svd.matrixU();
   V_ = svd.matrixV();
-  VecNd singular_values = svd.singularValues();
+  singular_values_ = svd.singularValues();
   Sigma_ = MatNd::Zero(U_.rows(), V_.rows()) ;
   for(uint32_t i = 0; i < Sigma_.rows() && i < Sigma_.cols(); i++) //TODO: sparse
   {
-    Sigma_(i,i) = singular_values(i);
+    Sigma_(i,i) = singular_values_(i);
   }
   rank_ = svd.rank();
 }
