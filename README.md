@@ -1,6 +1,6 @@
 # PTSC Eigen
 
-Prioritized Task-Space control solver using the Eigen linear algebry library, OSQP quadratic programming solver and the OsqpEigen wrapper for OSQP.
+Prioritized Task-Space control solver using the Eigen linear algebra library, OSQP quadratic programming solver and the OsqpEigen wrapper for OSQP.
 
 Implements both [unconstrained](http://www.delasa.net/iros09/) and [constrained](http://www.delasa.net/feature/index.html) version of the Prioritized Task Space Control algorithm by [Martin de Lasa](http://www.delasa.net/) et al. 
 
