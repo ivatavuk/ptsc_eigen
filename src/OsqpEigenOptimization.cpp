@@ -97,7 +97,7 @@ VecNd OsqpEigenOpt::solveProblem()
 
 bool OsqpEigenOpt::checkFeasibility() //Call this after calling solve
 {
-  return !( (int) solver_.getStatus() == OSQP_PRIMAL_INFEASIBLE );
+  return !( (int) solver_.getStatus() == OSQP_PRIMAL_INFEASIBLE || (int) solver_.getStatus() == OSQP_PRIMAL_INFEASIBLE_INACCURATE );
 }
 
 void OsqpEigenOpt::setSparseBlock( Eigen::SparseMatrix<double> &output_matrix, const Eigen::SparseMatrix<double> &input_block,
