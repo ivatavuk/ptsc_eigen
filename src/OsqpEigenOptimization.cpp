@@ -12,28 +12,19 @@ OsqpEigenOpt::OsqpEigenOpt()
 }
 
 OsqpEigenOpt::OsqpEigenOpt( const SparseQpProblem &qp_problem, 
-                            bool verbosity ) 
+                            const OsqpSettings &settings) 
   : alpha_(1.0),
   n_(qp_problem.A_qp.rows()), 
   m_(qp_problem.upper_bound.rows() + qp_problem.A_eq.rows() + qp_problem.A_ieq.rows()),
   linearConstraintsMatrix_(m_, n_)
 {
-  initializeSolver(qp_problem, verbosity);
+  initializeSolver(qp_problem, settings);
 }
 
 void OsqpEigenOpt::initializeSolver(const SparseQpProblem &qp_problem, 
-                                    bool verbosity ) 
+                                    const OsqpSettings &settings ) 
 {
-  solver_.settings()->setVerbosity(verbosity);
-  solver_.settings()->setAlpha(1.0);
-
-  solver_.settings()->setAbsoluteTolerance(1e-6);
-  solver_.settings()->setRelativeTolerance(1e-6);
-  solver_.settings()->setWarmStart(true);
-  solver_.settings()->setMaxIteration(10000);
-
-  solver_.settings()->setAdaptiveRho(true);
-  solver_.settings()->setAdaptiveRhoInterval(5);
+  setSolverSettings(settings);
 
   solver_.data()->setNumberOfVariables(n_);
   solver_.data()->setNumberOfConstraints(m_);
@@ -118,4 +109,17 @@ void OsqpEigenOpt::setSparseBlock( Eigen::SparseMatrix<double> &output_matrix, c
       output_matrix.insert(it.row() + i, it.col() + j) = it.value();
     }
   }
+}
+
+void OsqpEigenOpt::setSolverSettings(const OsqpSettings &settings)
+{
+  solver_.settings()->setVerbosity(settings.verbosity);
+  solver_.settings()->setAlpha(settings.alpha);
+  solver_.settings()->setAbsoluteTolerance(settings.absolute_tolerance);
+  solver_.settings()->setRelativeTolerance(settings.relative_tolerance);
+  solver_.settings()->setWarmStart(settings.warm_start);
+  solver_.settings()->setMaxIteration(settings.max_iteration);
+  solver_.settings()->setAdaptiveRho(settings.adaptive_rho);
+  solver_.settings()->setAdaptiveRhoInterval(settings.adaptive_rho_interval);
+  solver_.settings()->setTimeLimit(settings.time_limit);
 }

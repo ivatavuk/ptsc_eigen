@@ -74,18 +74,22 @@ MatNd SVD::getSigmaPInv()
 }
 
 // -------------- PTSC ------------------
-PTSC::PTSC(const std::vector<Task> &tasks)
+PTSC::PTSC( const std::vector<Task> &tasks,
+            const OsqpSettings &osqp_settings)
   : tasks_(tasks), problem_N_(tasks_[0].A.cols()),  
-  N_priorities_(tasks_.size())
+  N_priorities_(tasks_.size()), 
+  osqp_settings_(osqp_settings)
 {
   PTSC_type_ = UNCONSTRAINED;
 }
 
 PTSC::PTSC( const std::vector<Task> &tasks, 
-            const VecNd &lower_bounds, const VecNd &upper_bounds) 
+            const VecNd &lower_bounds, const VecNd &upper_bounds,
+            const OsqpSettings &osqp_settings ) 
   : tasks_(tasks), problem_N_(tasks_[0].A.cols()),  
   N_priorities_(tasks_.size()), 
-  lower_bounds_(lower_bounds), upper_bounds_(upper_bounds)
+  lower_bounds_(lower_bounds), upper_bounds_(upper_bounds), 
+  osqp_settings_(osqp_settings)
 {
   PTSC_type_ = BOUND_CONSTRAINED;
   checkBoundDimensions(lower_bounds, upper_bounds);
@@ -94,11 +98,13 @@ PTSC::PTSC( const std::vector<Task> &tasks,
 PTSC::PTSC( const std::vector<Task> &tasks,
             const MatNd &A_eq, const VecNd &b_eq,
             const MatNd &A_ieq, const VecNd &b_ieq,  
-            const VecNd &lower_bounds, const VecNd &upper_bounds )
+            const VecNd &lower_bounds, const VecNd &upper_bounds,
+            const OsqpSettings &osqp_settings )
   : tasks_(tasks), problem_N_(tasks_[0].A.cols()),  
   N_priorities_(tasks_.size()),
   lower_bounds_(lower_bounds), upper_bounds_(upper_bounds),
-  A_eq_(A_eq), A_ieq_(A_ieq), b_eq_(b_eq), b_ieq_(b_ieq)
+  A_eq_(A_eq), A_ieq_(A_ieq), b_eq_(b_eq), b_ieq_(b_ieq), 
+  osqp_settings_(osqp_settings)
 {
   PTSC_type_ = FULLY_CONSTRAINED;
   checkBoundDimensions(lower_bounds, upper_bounds);
@@ -219,7 +225,7 @@ VecNd PTSC::solveOnePriorityQP( const MatNd &Ai_dashed, const VecNd &bi_dashed,
     qp_problem.A_eq = A_eq_ * C_dashed;
     qp_problem.b_eq = b_eq_ + A_eq_ * d_dashed;
   }
-  OsqpEigenOpt my_osqp_eigen_opt(qp_problem);
+  OsqpEigenOpt my_osqp_eigen_opt(qp_problem, osqp_settings_);
   auto solution = my_osqp_eigen_opt.solveProblem();
   problem_feasible = my_osqp_eigen_opt.checkFeasibility();
 

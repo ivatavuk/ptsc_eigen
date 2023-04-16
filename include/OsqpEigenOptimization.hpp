@@ -25,15 +25,28 @@
 using VecNd = Eigen::VectorXd;
 using MatNd = Eigen::MatrixXd;
 
+struct OsqpSettings
+{
+  bool verbosity = false;
+  double alpha = 1.0;
+  double absolute_tolerance = 1e-6;
+  double relative_tolerance = 1e-6;
+  bool warm_start = false;
+  int max_iteration = 10000;
+  double time_limit = 0; //0 -> disabled
+  bool adaptive_rho = true;
+  int adaptive_rho_interval = 0; //0 -> automatic
+}; 
+
 class OsqpEigenOpt 
 {    
 public:
   OsqpEigenOpt( );
   OsqpEigenOpt(	const SparseQpProblem &sparse_qp_problem, 
-                bool verbosity = false );
+                const OsqpSettings &settings = OsqpSettings());
 
   void initializeSolver(const SparseQpProblem &sparse_qp_problem, 
-                        bool verbosity );
+                        const OsqpSettings &settings );
 
   void setGradientAndInit(VecNd &b_qp); 
 
@@ -56,6 +69,8 @@ private:
 
   static void setSparseBlock( Eigen::SparseMatrix<double> &output_matrix, const Eigen::SparseMatrix<double> &input_block,
                               uint32_t i, uint32_t j );
+
+  void setSolverSettings(const OsqpSettings &settings);
 };
 
 #endif //OSQP_EIGEN_OPTIMIZATION_HPP_

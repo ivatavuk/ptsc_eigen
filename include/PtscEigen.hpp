@@ -66,7 +66,8 @@ public:
    *           x
    *          s.t.  E_k(x) = h_k, \foreach k < N 
    */
-  PTSC(const std::vector<Task> &tasks);
+  PTSC(const std::vector<Task> &tasks,
+       const OsqpSettings &osqp_settings = OsqpSettings());
 
   /**
    * @brief 
@@ -77,7 +78,8 @@ public:
    *                lower_bounds <= x <= upper_bounds
    */
   PTSC( const std::vector<Task> &tasks, 
-        const VecNd &lower_bounds, const VecNd &upper_bounds );
+        const VecNd &lower_bounds, const VecNd &upper_bounds,
+        const OsqpSettings &osqp_settings = OsqpSettings() );
 
   /**
    * @brief 
@@ -92,7 +94,8 @@ public:
   PTSC( const std::vector<Task> &tasks,
         const MatNd &A_eq, const VecNd &b_eq,
         const MatNd &A_ieq, const VecNd &b_ieq,  
-        const VecNd &lower_bounds, const VecNd &upper_bounds );
+        const VecNd &lower_bounds, const VecNd &upper_bounds,
+        const OsqpSettings &osqp_settings = OsqpSettings() );
 
   void updateProblem(const std::vector<Task> &tasks);
 
@@ -127,7 +130,9 @@ private:
   VecNd solveConstrained();
   VecNd solveOnePriorityQP( const MatNd &Ai_dashed, const VecNd &bi_dashed, 
                             const MatNd &C_dashed, const VecNd &d_dashed,
-                            bool &problem_feasible); 
+                            bool &problem_feasible);
+
+  OsqpSettings osqp_settings_;
 };
 
 }
