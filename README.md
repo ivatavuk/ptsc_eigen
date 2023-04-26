@@ -2,12 +2,9 @@
 
 Prioritized Task-Space control solver using the Eigen linear algebra library, OSQP quadratic programming solver and the OsqpEigen wrapper for OSQP.
 
-Implements both [unconstrained](http://www.delasa.net/iros09/) and [constrained](http://www.delasa.net/feature/index.html) version of the Prioritized Task Space Control algorithm by [Martin de Lasa](http://www.delasa.net/) et al. 
+Implements both [unconstrained](http://www.delasa.net/iros09/) and [constrained](http://www.delasa.net/feature/index.html) version of the Prioritized Task Space Control algorithm by [Martin de Lasa](http://www.delasa.net/) et al.  
 
-Note that the PTSC problem subject solely to equality constraints can be solved by an unconstrained PTSC solver, by using the constraint term as a task with the highest priority, and checking if the constraint is satisfied. If the constraint is not satisfied, the constrained problem in infeasible. 
-
-## Mathematical notation
-Lets denote the vector of optimization variables as $\boldsymbol{x}$ and the number of priorities of the PTSC problem as $N$.
+## Notation
 
 The quadratic cost function of the $i$-th priority has the following form:
 
