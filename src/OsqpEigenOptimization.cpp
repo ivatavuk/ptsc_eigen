@@ -13,8 +13,7 @@ OsqpEigenOpt::OsqpEigenOpt()
 
 OsqpEigenOpt::OsqpEigenOpt( const SparseQpProblem &qp_problem, 
                             const OsqpSettings &settings) 
-  : alpha_(1.0),
-  n_(qp_problem.A_qp.rows()), 
+  : n_(qp_problem.A_qp.rows()), 
   m_(qp_problem.upper_bound.rows() + qp_problem.A_eq.rows() + qp_problem.A_ieq.rows()),
   linearConstraintsMatrix_(m_, n_)
 {

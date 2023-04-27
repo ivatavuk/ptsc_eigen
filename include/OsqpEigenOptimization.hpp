@@ -57,8 +57,6 @@ public:
 private:
   OsqpEigen::Solver solver_;
 
-  double alpha_;
-
   uint32_t n_; //number of optimization variables
   uint32_t m_; //number of constraints
 
