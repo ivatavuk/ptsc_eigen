@@ -1,5 +1,5 @@
-#ifndef CHRONO_DEBUG_H
-#define CHRONO_DEBUG_H
+#ifndef CHRONO_CALL_H
+#define CHRONO_CALL_H
 
 #include <chrono>
 #include <iostream>
@@ -60,4 +60,4 @@ void TemplateChronoCall(F fun)
 #endif
 
 
-#endif /* CHRONO_DEBUG_H */
+#endif /* CHRONO_CALL_H */
