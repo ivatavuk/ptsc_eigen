@@ -13,11 +13,11 @@ int main()
   const Eigen::Matrix<double, 3,1> expected_solution {-2, 5, 4};
   auto x_dimension = 3;
 
-  MatNd A_1(x_dimension, x_dimension), 
-        A_2(x_dimension, x_dimension), 
-        A_3(x_dimension, x_dimension);
+  Eigen::MatrixXd A_1(x_dimension, x_dimension), 
+                  A_2(x_dimension, x_dimension), 
+                  A_3(x_dimension, x_dimension);
 
-  VecNd b_1(x_dimension), b_2(x_dimension), b_3(x_dimension);
+  Eigen::VectorXd b_1(x_dimension), b_2(x_dimension), b_3(x_dimension);
 
   A_1 <<  1, 1, 0, 
           0, 0, 0,
@@ -40,7 +40,7 @@ int main()
   
   PtscEigen::PTSC ptsc(E_vector);
 
-  VecNd solution;
+  Eigen::VectorXd solution;
   ChronoCall(microseconds,
     solution = ptsc.solve();
   );

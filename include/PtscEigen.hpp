@@ -14,9 +14,6 @@
 
 #include "OsqpEigenOptimization.hpp"
 
-using VecNd = Eigen::VectorXd;
-using MatNd = Eigen::MatrixXd;
-
 namespace PtscEigen {
 
 /**
@@ -31,7 +28,7 @@ struct Task
    * @param t_A Matrix A
    * @param t_b Vector b 
    */
-  Task(const MatNd &t_A, const VecNd &t_b);
+  Task(const Eigen::MatrixXd &t_A, const Eigen::VectorXd &t_b);
 
   /**
    * @brief Calculate task cost value
@@ -41,10 +38,10 @@ struct Task
    * @param x Input vector
    * @return double task cost value
    */
-  double calcTaskCostValue(const VecNd &x);
+  double calcTaskCostValue(const Eigen::VectorXd &x);
 
-  MatNd A; /**< Matrix A of a task ||A*x - b||^2 */
-  VecNd b; /**< Vector b of a task ||A*x - b||^2 */
+  Eigen::MatrixXd A; /**< Matrix A of a task ||A*x - b||^2 */
+  Eigen::VectorXd b; /**< Vector b of a task ||A*x - b||^2 */
 };
 
 /**
@@ -58,25 +55,25 @@ public:
    * @brief Construct a new SVD object and compute the decomposition U * Sigma * V^T
    * @param A Input matrix
    */
-  SVD(const MatNd &A);
+  SVD(const Eigen::MatrixXd &A);
 
   /**
    * @brief Calculate the pseudoinverse of A using SVD
-   * @return MatNd pinv(A) 
+   * @return Eigen::MatrixXd pinv(A) 
    */
-  MatNd pseudoinverse();
+  Eigen::MatrixXd pseudoinverse();
 
   /**
    * @brief Calculate the nullspace of A using SVD
-   * @return MatNd null(A)
+   * @return Eigen::MatrixXd null(A)
    */
-  MatNd null();
+  Eigen::MatrixXd null();
 
-  MatNd A_; /**< @brief Input matrix A, where A = U * Sigma * V^T */
-  MatNd U_; /**< @brief Matrix U of U * Sigma * V^T */
-  MatNd Sigma_; /**< @brief Matrix Sigma of U * Sigma * V^T */
-  MatNd V_; /**< @brief Matrix V of U * Sigma * V^T */
-  VecNd singular_values_; /**< @brief Vector containing singular values of A */
+  Eigen::MatrixXd A_; /**< @brief Input matrix A, where A = U * Sigma * V^T */
+  Eigen::MatrixXd U_; /**< @brief Matrix U of U * Sigma * V^T */
+  Eigen::MatrixXd Sigma_; /**< @brief Matrix Sigma of U * Sigma * V^T */
+  Eigen::MatrixXd V_; /**< @brief Matrix V of U * Sigma * V^T */
+  Eigen::VectorXd singular_values_; /**< @brief Vector containing singular values of A */
   uint32_t rank_; /**< @brief SVD rank */
     
 private:
@@ -88,9 +85,9 @@ private:
 
   /**
    * @brief Calculate the pseudoinverse of the Sigma_ matrix
-   * @return MatNd pinv(Sigma_)
+   * @return Eigen::MatrixXd pinv(Sigma_)
    */
-  MatNd calcSigmaPInv();
+  Eigen::MatrixXd calcSigmaPInv();
 };
 
 /**
@@ -130,7 +127,7 @@ public:
    * @param osqp_settings OsqpSettings object
    */
   PTSC( const std::vector<Task> &tasks, 
-        const VecNd &lower_bounds, const VecNd &upper_bounds,
+        const Eigen::VectorXd &lower_bounds, const Eigen::VectorXd &upper_bounds,
         const OsqpSettings &osqp_settings = OsqpSettings() );
 
   /**
@@ -154,9 +151,9 @@ public:
    * @param osqp_settings OsqpSettings object
    */
   PTSC( const std::vector<Task> &tasks,
-        const MatNd &A_eq, const VecNd &b_eq,
-        const MatNd &A_ieq, const VecNd &b_ieq,  
-        const VecNd &lower_bounds, const VecNd &upper_bounds,
+        const Eigen::MatrixXd &A_eq, const Eigen::VectorXd &b_eq,
+        const Eigen::MatrixXd &A_ieq, const Eigen::VectorXd &b_ieq,  
+        const Eigen::VectorXd &lower_bounds, const Eigen::VectorXd &upper_bounds,
         const OsqpSettings &osqp_settings = OsqpSettings() );
 
   /**
@@ -167,9 +164,9 @@ public:
 
   /**
    * @brief Solve the PTSC problem
-   * @return VecNd solution vector x
+   * @return Eigen::VectorXd solution vector x
    */
-  VecNd solve();
+  Eigen::VectorXd solve();
 
 private:
   std::vector<Task> tasks_;  /**< @brief std::vector<Task> with decreasing priorities */
@@ -177,16 +174,16 @@ private:
   uint32_t problem_N_; /**< @brief Dimension of the optimization variable vector x */
   uint32_t N_priorities_; /**< @brief Number of priorities - size of tasks_*/ 
 
-  VecNd lower_bounds_; /**< @brief Lower bounds on x */
-  VecNd upper_bounds_; /**< @brief Upper bounds on x */
+  Eigen::VectorXd lower_bounds_; /**< @brief Lower bounds on x */
+  Eigen::VectorXd upper_bounds_; /**< @brief Upper bounds on x */
 
-  MatNd A_eq_; /**< @brief Equality constraint matrix A_eq_ */
-  VecNd b_eq_; /**< @brief Equality constraint vector b_eq_ */
-  MatNd A_ieq_; /**< @brief Inequality constraint matrix A_ieq_ */
-  VecNd b_ieq_; /**< @brief Inequality constraint vector b_ieq_ */
+  Eigen::MatrixXd A_eq_; /**< @brief Equality constraint matrix A_eq_ */
+  Eigen::VectorXd b_eq_; /**< @brief Equality constraint vector b_eq_ */
+  Eigen::MatrixXd A_ieq_; /**< @brief Inequality constraint matrix A_ieq_ */
+  Eigen::VectorXd b_ieq_; /**< @brief Inequality constraint vector b_ieq_ */
   
-  std::vector<MatNd> C_dashed_;
-  std::vector<MatNd> A_dashed_; 
+  std::vector<Eigen::MatrixXd> C_dashed_;
+  std::vector<Eigen::MatrixXd> A_dashed_; 
 
   /**
    * @enum PTSC problem type
@@ -200,12 +197,12 @@ private:
 
   ProblemType PTSC_type_;
 
-  void checkBoundDimensions(const VecNd &lower_bounds, const VecNd &upper_bounds);
-  VecNd solveUnconstrained();
-  VecNd solveConstrained();
-  VecNd solveOnePriorityQP( const MatNd &Ai_dashed, const VecNd &bi_dashed, 
-                            const MatNd &C_dashed, const VecNd &d_dashed,
-                            bool &problem_feasible);
+  void checkBoundDimensions(const Eigen::VectorXd &lower_bounds, const Eigen::VectorXd &upper_bounds);
+  Eigen::VectorXd solveUnconstrained();
+  Eigen::VectorXd solveConstrained();
+  Eigen::VectorXd solveOnePriorityQP( const Eigen::MatrixXd &Ai_dashed, const Eigen::VectorXd &bi_dashed, 
+                                      const Eigen::MatrixXd &C_dashed, const Eigen::VectorXd &d_dashed,
+                                      bool &problem_feasible);
 
   OsqpSettings osqp_settings_;
 };

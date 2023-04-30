@@ -12,16 +12,16 @@ using PtscEigen::Task;
 using PtscEigen::SVD;
 using PtscEigen::PTSC;
 // -------------- Task ------------------
-Task::Task(const MatNd &t_A, const VecNd &t_b)
+Task::Task(const Eigen::MatrixXd &t_A, const Eigen::VectorXd &t_b)
   : A(t_A), b(t_b)
 {
   if (A.rows() != b.size())
     throw std::invalid_argument("Task constructor => Matrix sizes do not match!\n");
 }
 
-double Task::calcTaskCostValue(const VecNd &x) 
+double Task::calcTaskCostValue(const Eigen::VectorXd &x) 
 {
-  VecNd res = x.transpose() * A.transpose() * A * x +
+  Eigen::VectorXd res = x.transpose() * A.transpose() * A * x +
               2 * x.transpose() * A.transpose() * b + 
               b.transpose() * b;
   return res(0);
@@ -30,19 +30,19 @@ double Task::calcTaskCostValue(const VecNd &x)
 
 // -------------- SVD ------------------
 
-SVD::SVD(const MatNd &A) : A_(A)
+SVD::SVD(const Eigen::MatrixXd &A) : A_(A)
 {
   compute();
 }
 
 void SVD::compute()
 {
-  Eigen::JacobiSVD<MatNd> svd(A_);
+  Eigen::JacobiSVD<Eigen::MatrixXd> svd(A_);
   svd.compute(A_, Eigen::ComputeFullU | Eigen::ComputeFullV);
   U_ = svd.matrixU();
   V_ = svd.matrixV();
   singular_values_ = svd.singularValues();
-  Sigma_ = MatNd::Zero(U_.rows(), V_.rows()) ;
+  Sigma_ = Eigen::MatrixXd::Zero(U_.rows(), V_.rows()) ;
   for(uint32_t i = 0; i < Sigma_.rows() && i < Sigma_.cols(); i++) //TODO: sparse
   {
     Sigma_(i,i) = singular_values_(i);
@@ -50,19 +50,19 @@ void SVD::compute()
   rank_ = svd.rank();
 }
 
-MatNd SVD::pseudoinverse() 
+Eigen::MatrixXd SVD::pseudoinverse() 
 {	
   return V_ * calcSigmaPInv() * U_.transpose();
 }
 
-MatNd SVD::null() 
+Eigen::MatrixXd SVD::null() 
 {
   return V_.block(0, rank_, V_.rows(), V_.cols() - rank_);
 }
 
-MatNd SVD::calcSigmaPInv() 
+Eigen::MatrixXd SVD::calcSigmaPInv() 
 {
-  MatNd temp_mat = Sigma_;
+  Eigen::MatrixXd temp_mat = Sigma_;
   for(uint32_t i = 0; i < Sigma_.rows() && i < Sigma_.cols(); i++) 
   {
     if(temp_mat(i,i) != 0.0)
@@ -84,7 +84,7 @@ PTSC::PTSC( const std::vector<Task> &tasks,
 }
 
 PTSC::PTSC( const std::vector<Task> &tasks, 
-            const VecNd &lower_bounds, const VecNd &upper_bounds,
+            const Eigen::VectorXd &lower_bounds, const Eigen::VectorXd &upper_bounds,
             const OsqpSettings &osqp_settings ) 
   : tasks_(tasks), problem_N_(tasks_[0].A.cols()),  
   N_priorities_(tasks_.size()), 
@@ -96,9 +96,9 @@ PTSC::PTSC( const std::vector<Task> &tasks,
 }
 
 PTSC::PTSC( const std::vector<Task> &tasks,
-            const MatNd &A_eq, const VecNd &b_eq,
-            const MatNd &A_ieq, const VecNd &b_ieq,  
-            const VecNd &lower_bounds, const VecNd &upper_bounds,
+            const Eigen::MatrixXd &A_eq, const Eigen::VectorXd &b_eq,
+            const Eigen::MatrixXd &A_ieq, const Eigen::VectorXd &b_ieq,  
+            const Eigen::VectorXd &lower_bounds, const Eigen::VectorXd &upper_bounds,
             const OsqpSettings &osqp_settings )
   : tasks_(tasks), problem_N_(tasks_[0].A.cols()),  
   N_priorities_(tasks_.size()),
@@ -110,7 +110,7 @@ PTSC::PTSC( const std::vector<Task> &tasks,
   checkBoundDimensions(lower_bounds, upper_bounds);
 }
 
-void PTSC::checkBoundDimensions(const VecNd &lower_bounds, const VecNd &upper_bounds)
+void PTSC::checkBoundDimensions(const Eigen::VectorXd &lower_bounds, const Eigen::VectorXd &upper_bounds)
 {
   if (upper_bounds.rows() != lower_bounds.rows()) 
   {
@@ -131,7 +131,7 @@ void PTSC::updateProblem(const std::vector<Task> &tasks)
   tasks_ = tasks;
 }
 
-VecNd PTSC::solve() 
+Eigen::VectorXd PTSC::solve() 
 {
   if (PTSC_type_ == UNCONSTRAINED) 
     return solveUnconstrained();
@@ -139,17 +139,17 @@ VecNd PTSC::solve()
     return solveConstrained();
   
   std::runtime_error("PTSC::solve => Unknown PTSC_type");
-  return VecNd(); 
+  return Eigen::VectorXd(); 
 }
 
-VecNd PTSC::solveUnconstrained() 
+Eigen::VectorXd PTSC::solveUnconstrained() 
 {
-  MatNd C_dashed = MatNd::Identity(problem_N_, problem_N_);
-  VecNd d_dashed = VecNd::Zero(problem_N_);
+  Eigen::MatrixXd C_dashed = Eigen::MatrixXd::Identity(problem_N_, problem_N_);
+  Eigen::VectorXd d_dashed = Eigen::VectorXd::Zero(problem_N_);
   for(auto task : tasks_) 
   {
-    MatNd Ai_dashed = task.A * C_dashed;
-    VecNd bi_dashed = task.b - task.A * d_dashed;
+    Eigen::MatrixXd Ai_dashed = task.A * C_dashed;
+    Eigen::VectorXd bi_dashed = task.b - task.A * d_dashed;
 
     SVD Ai_dashed_svd(Ai_dashed);
     d_dashed = d_dashed + C_dashed * Ai_dashed_svd.pseudoinverse() * bi_dashed;
@@ -162,20 +162,20 @@ VecNd PTSC::solveUnconstrained()
   return d_dashed;
 }
 
-VecNd PTSC::solveConstrained() 
+Eigen::VectorXd PTSC::solveConstrained() 
 {
-  MatNd C_dashed = MatNd::Identity(problem_N_, problem_N_);
-  VecNd d_dashed = VecNd::Zero(problem_N_);
+  Eigen::MatrixXd C_dashed = Eigen::MatrixXd::Identity(problem_N_, problem_N_);
+  Eigen::VectorXd d_dashed = Eigen::VectorXd::Zero(problem_N_);
   bool problem_feasible = false;
   for(auto task : tasks_) 
   { 
-    MatNd Ai_dashed = task.A * C_dashed;
-    VecNd bi_dashed = task.b - task.A * d_dashed;
+    Eigen::MatrixXd Ai_dashed = task.A * C_dashed;
+    Eigen::VectorXd bi_dashed = task.b - task.A * d_dashed;
     
     SVD Ai_dashed_svd(Ai_dashed);
 
-    VecNd di = solveOnePriorityQP(Ai_dashed, bi_dashed, C_dashed, d_dashed, 
-                                  problem_feasible);
+    Eigen::VectorXd di = solveOnePriorityQP(Ai_dashed, bi_dashed, C_dashed, d_dashed, 
+                                            problem_feasible);
 
     if (!problem_feasible)
     {
@@ -194,9 +194,9 @@ VecNd PTSC::solveConstrained()
   return d_dashed;
 }
 
-VecNd PTSC::solveOnePriorityQP( const MatNd &Ai_dashed, const VecNd &bi_dashed, 
-                                const MatNd &C_dashed, const VecNd &d_dashed,
-                                bool &problem_feasible)
+Eigen::VectorXd PTSC::solveOnePriorityQP( const Eigen::MatrixXd &Ai_dashed, const Eigen::VectorXd &bi_dashed, 
+                                          const Eigen::MatrixXd &C_dashed, const Eigen::VectorXd &d_dashed,
+                                          bool &problem_feasible)
 {
   DenseQpProblem qp_problem;
   qp_problem.A_qp = Ai_dashed.transpose() * Ai_dashed;
@@ -204,21 +204,21 @@ VecNd PTSC::solveOnePriorityQP( const MatNd &Ai_dashed, const VecNd &bi_dashed,
 
   if(PTSC_type_ == BOUND_CONSTRAINED)
   {
-    qp_problem.A_ieq = MatNd::Zero(C_dashed.rows() * 2, C_dashed.cols());
+    qp_problem.A_ieq = Eigen::MatrixXd::Zero(C_dashed.rows() * 2, C_dashed.cols());
     qp_problem.A_ieq << C_dashed, 
                         -C_dashed;
                         
-    qp_problem.b_ieq = VecNd::Zero(d_dashed.rows() * 2);
+    qp_problem.b_ieq = Eigen::VectorXd::Zero(d_dashed.rows() * 2);
     qp_problem.b_ieq << d_dashed - upper_bounds_, 
                         -d_dashed + lower_bounds_;
   }
   if(PTSC_type_ == FULLY_CONSTRAINED)
   {
-    qp_problem.A_ieq = MatNd::Zero(C_dashed.rows() * 2 + A_ieq_.rows(), C_dashed.cols());
+    qp_problem.A_ieq = Eigen::MatrixXd::Zero(C_dashed.rows() * 2 + A_ieq_.rows(), C_dashed.cols());
     qp_problem.A_ieq << C_dashed, 
                         -C_dashed, 
                         A_ieq_ * C_dashed;
-    qp_problem.b_ieq = VecNd::Zero(d_dashed.rows() * 2 + b_ieq_.rows());
+    qp_problem.b_ieq = Eigen::VectorXd::Zero(d_dashed.rows() * 2 + b_ieq_.rows());
     qp_problem.b_ieq << d_dashed - upper_bounds_, 
                         -d_dashed + lower_bounds_, 
                         b_ieq_ + A_ieq_ * d_dashed;

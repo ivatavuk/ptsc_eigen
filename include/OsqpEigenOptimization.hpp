@@ -22,9 +22,6 @@
 
 #include "QpProblem.hpp"
 
-using VecNd = Eigen::VectorXd;
-using MatNd = Eigen::MatrixXd;
-
 struct OsqpSettings
 {
   bool verbosity = false;
@@ -48,9 +45,9 @@ public:
   void initializeSolver(const SparseQpProblem &sparse_qp_problem, 
                         const OsqpSettings &settings );
 
-  void setGradientAndInit(VecNd &b_qp); 
+  void setGradientAndInit(Eigen::VectorXd &b_qp); 
 
-  VecNd solveProblem();
+  Eigen::VectorXd solveProblem();
 
   bool checkFeasibility(); 
 
@@ -60,12 +57,11 @@ private:
   uint32_t n_; //number of optimization variables
   uint32_t m_; //number of constraints
 
-  double inf = 1e100;
+  Eigen::VectorXd b_qp_, lower_bound_, upper_bound_;
+  Eigen::SparseMatrix<double> linearConstraintsMatrix_;
 
-  VecNd b_qp_, lower_bound_, upper_bound_;
-  SparseMat linearConstraintsMatrix_;
-
-  static void setSparseBlock( Eigen::SparseMatrix<double> &output_matrix, const Eigen::SparseMatrix<double> &input_block,
+  static void setSparseBlock( Eigen::SparseMatrix<double> &output_matrix, 
+                              const Eigen::SparseMatrix<double> &input_block,
                               uint32_t i, uint32_t j );
 
   void setSolverSettings(const OsqpSettings &settings);
