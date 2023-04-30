@@ -43,6 +43,7 @@ to suppress infeasibility warnings.
   git clone https://github.com/ivatavuk/ptsc_eigen.git
   cd ptsc_eigen
   mkdir build
+  cd build
   cmake ..
   make
   make install
