@@ -73,6 +73,8 @@ Eigen::MatrixXd SVD::calcSigmaPInv()
   return temp_mat.transpose();
 }
 
+uint32_t SVD::getRank() const { return rank_; }
+
 // -------------- PTSC ------------------
 PTSC::PTSC( const std::vector<Task> &tasks,
             const OsqpSettings &osqp_settings)
@@ -153,7 +155,7 @@ Eigen::VectorXd PTSC::solveUnconstrained()
 
     SVD Ai_dashed_svd(Ai_dashed);
     d_dashed = d_dashed + C_dashed * Ai_dashed_svd.pseudoinverse() * bi_dashed;
-    if (Ai_dashed_svd.rank_ == Ai_dashed.cols()) 
+    if (Ai_dashed_svd.getRank() == Ai_dashed.cols()) 
     {
       return d_dashed;
     }
@@ -182,7 +184,7 @@ Eigen::VectorXd PTSC::solveConstrained()
       return d_dashed;
     }
     d_dashed = d_dashed + C_dashed * di;
-    if (Ai_dashed_svd.rank_ == Ai_dashed.cols()) 
+    if (Ai_dashed_svd.getRank() == Ai_dashed.cols()) 
     {
       //TODO Add debug option
       return d_dashed;
