@@ -19,7 +19,7 @@ Task::Task(const MatNd &t_A, const VecNd &t_b)
     throw std::invalid_argument("Task constructor => Matrix sizes do not match!\n");
 }
 
-double Task::getTaskCostValue(const VecNd &x) 
+double Task::calcTaskCostValue(const VecNd &x) 
 {
   VecNd res = x.transpose() * A.transpose() * A * x +
               2 * x.transpose() * A.transpose() * b + 
@@ -52,7 +52,7 @@ void SVD::compute()
 
 MatNd SVD::pseudoinverse() 
 {	
-  return V_ * getSigmaPInv() * U_.transpose();
+  return V_ * calcSigmaPInv() * U_.transpose();
 }
 
 MatNd SVD::null() 
@@ -60,7 +60,7 @@ MatNd SVD::null()
   return V_.block(0, rank_, V_.rows(), V_.cols() - rank_);
 }
 
-MatNd SVD::getSigmaPInv() 
+MatNd SVD::calcSigmaPInv() 
 {
   MatNd temp_mat = Sigma_;
   for(uint32_t i = 0; i < Sigma_.rows() && i < Sigma_.cols(); i++) 
@@ -103,7 +103,7 @@ PTSC::PTSC( const std::vector<Task> &tasks,
   : tasks_(tasks), problem_N_(tasks_[0].A.cols()),  
   N_priorities_(tasks_.size()),
   lower_bounds_(lower_bounds), upper_bounds_(upper_bounds),
-  A_eq_(A_eq), A_ieq_(A_ieq), b_eq_(b_eq), b_ieq_(b_ieq), 
+  A_eq_(A_eq), b_eq_(b_eq), A_ieq_(A_ieq), b_ieq_(b_ieq), 
   osqp_settings_(osqp_settings)
 {
   PTSC_type_ = FULLY_CONSTRAINED;
