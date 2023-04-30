@@ -1,7 +1,7 @@
 # PTSC Eigen
 | Ubuntu 18.04  | Ubuntu 20.04|
 |---------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
- [![Ubuntu18](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ubuntu18.yml/badge.svg)](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ubuntu18.yml) | ![Ubuntu20](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ubuntu20.yml/badge.svg)](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ubuntu20.yml) |
+ [![Ubuntu18](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ubuntu18.yml/badge.svg)](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ubuntu18.yml) | [![Ubuntu20](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ubuntu20.yml/badge.svg)](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ubuntu20.yml) |
 
 
 Prioritized Task-Space control solver using the Eigen linear algebra library, OSQP quadratic programming solver and the OsqpEigen wrapper for OSQP.
