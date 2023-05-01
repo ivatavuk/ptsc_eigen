@@ -1,4 +1,4 @@
-name: Ubuntu18
+name: Build Status
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
