@@ -3,6 +3,8 @@ project(ptsc_eigen)
 
 find_package(OsqpEigen REQUIRED)
 
+include(CTest)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -83,3 +85,8 @@ add_executable(test_example_fully_constrained
 target_link_libraries(test_example_fully_constrained
   PRIVATE ${LIBRARY_TARGET_NAME}
 )
+
+# Define test targets
+add_test(NAME test_unconstrained COMMAND test_example_unconstrained)
+add_test(NAME test_bound_constrained COMMAND test_example_bound_constrained)
+add_test(NAME test_fully_constrained COMMAND test_example_fully_constrained)

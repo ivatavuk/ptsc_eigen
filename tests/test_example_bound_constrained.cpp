@@ -6,7 +6,6 @@
  */
 
 #include "PtscEigen.hpp"
-#include "ChronoCall.hpp"
 
 int main()
 {  
@@ -43,17 +42,10 @@ int main()
   
   PtscEigen::PTSC ptsc(E_vector, x_lower, x_upper);
 
-  Eigen::VectorXd solution;
-  ChronoCall(microseconds,
-    solution = ptsc.solve();
-  );
-  
-  std::cout << "solution =\n" << solution << "\n";
+  Eigen::VectorXd solution = ptsc.solve();
   
   if(expected_solution.isApprox(solution, 1e-5))
-    std::cout << "Solved correctly!\n";
+    return 0;
   else 
-    std::cout << "Solved incorrectly!\n";
-  
-  return 0;
+    return -1;
 }
