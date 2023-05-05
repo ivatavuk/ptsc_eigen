@@ -41,5 +41,4 @@ jobs:
         run: ./.ci/ci_test_build.sh
 
       - name: Test
-        continue-on-error: true
         run: ./.ci/ci_run_tests.sh
