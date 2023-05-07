@@ -1,6 +1,6 @@
 # PTSC Eigen
 
-[![Build Status](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/build_status.yml/badge.svg)](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/build_status.yml)
+[![Build and Test](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ci.yml/badge.svg)](https://github.com/ivatavuk/ptsc_eigen/actions/workflows/ci.yml)
 
 
 Prioritized Task-Space control solver using the Eigen linear algebra library, OSQP quadratic programming solver and the OsqpEigen wrapper for OSQP.

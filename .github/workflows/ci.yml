@@ -1,4 +1,4 @@
-name: Build Status
+name: Build and Test
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
         run: ./.ci/ci_before_install.sh
 
       - name: Build
-        run: ./.ci/ci_test_build.sh
+        run: ./.ci/ci_build.sh
 
       - name: Test
         run: ./.ci/ci_run_tests.sh
