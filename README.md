@@ -32,6 +32,8 @@ Solution to the $i$-th priority is given by minimizing the $i$-th cost function 
 ## 📄 Dependences
 This project depends on [Eigen3](http://eigen.tuxfamily.org/index.php?title=Main_Page), [`osqp`](https://github.com/osqp/osqp) and [`osqp-eigen`](https://github.com/robotology/osqp-eigen)
 
+For now, `osqp-eigen` build is failing with new release of `osqp`, use `release-0.6.3` branch.
+
 It is recommended to build osqp-eigen from source, with:
 
     -DOSQP_EIGEN_DEBUG_OUTPUT=OFF 
