@@ -7,27 +7,25 @@
 
 #include "OsqpEigenOptimization.hpp"
 
-OsqpEigenOpt::OsqpEigenOpt() 
+OsqpEigenOpt::OsqpEigenOpt()
 {
 }
 
-OsqpEigenOpt::OsqpEigenOpt( const SparseQpProblem &qp_problem, 
-                            const OsqpSettings &settings) 
-  : n_(qp_problem.A_qp.rows()), 
-  m_(qp_problem.upper_bound.rows() + qp_problem.A_eq.rows() + qp_problem.A_ieq.rows()),
-  linearConstraintsMatrix_(m_, n_)
+OsqpEigenOpt::OsqpEigenOpt(const SparseQpProblem& qp_problem, const OsqpSettings& settings)
+  : n_(qp_problem.A_qp.rows())
+  , m_(qp_problem.upper_bound.rows() + qp_problem.A_eq.rows() + qp_problem.A_ieq.rows())
+  , linearConstraintsMatrix_(m_, n_)
 {
   initializeSolver(qp_problem, settings);
 }
 
-void OsqpEigenOpt::initializeSolver(const SparseQpProblem &qp_problem, 
-                                    const OsqpSettings &settings ) 
+void OsqpEigenOpt::initializeSolver(const SparseQpProblem& qp_problem, const OsqpSettings& settings)
 {
   setSolverSettings(settings);
 
   solver_.data()->setNumberOfVariables(n_);
   solver_.data()->setNumberOfConstraints(m_);
-  
+
   solver_.data()->clearHessianMatrix();
   solver_.data()->setHessianMatrix(qp_problem.A_qp);
   b_qp_ = qp_problem.b_qp;
@@ -47,13 +45,14 @@ void OsqpEigenOpt::initializeSolver(const SparseQpProblem &qp_problem,
   // bounds on optimization variables
   Eigen::VectorXd lower_bound_x = qp_problem.lower_bound;
   Eigen::VectorXd upper_bound_x = qp_problem.upper_bound;
-  
+
   // equality constraint bounds
   Eigen::VectorXd lower_bound_eq = -qp_problem.b_eq;
   Eigen::VectorXd upper_bound_eq = -qp_problem.b_eq;
 
   // inequality constraint bounds
-  Eigen::VectorXd lower_bound_ieq = -std::numeric_limits<double>::max() * Eigen::VectorXd::Ones(qp_problem.b_ieq.size());
+  Eigen::VectorXd lower_bound_ieq =
+      -std::numeric_limits<double>::max() * Eigen::VectorXd::Ones(qp_problem.b_ieq.size());
   Eigen::VectorXd upper_bound_ieq = -qp_problem.b_ieq;
 
   Eigen::VectorXd lower_bound(lower_bound_x.size() + lower_bound_eq.size() + lower_bound_ieq.size());
@@ -70,7 +69,7 @@ void OsqpEigenOpt::initializeSolver(const SparseQpProblem &qp_problem,
   solver_.initSolver();
 }
 
-void OsqpEigenOpt::setGradientAndInit(Eigen::VectorXd &b_qp ) 
+void OsqpEigenOpt::setGradientAndInit(Eigen::VectorXd& b_qp)
 {
   b_qp_ = b_qp;
   solver_.data()->setGradient(b_qp);
@@ -85,16 +84,16 @@ Eigen::VectorXd OsqpEigenOpt::solveProblem()
   return solver_.getSolution();
 }
 
-bool OsqpEigenOpt::checkFeasibility() //Call this after calling solve
+bool OsqpEigenOpt::checkFeasibility()  // Call this after calling solve
 {
-  return !( (int) solver_.getStatus() == OSQP_PRIMAL_INFEASIBLE || (int) solver_.getStatus() == OSQP_PRIMAL_INFEASIBLE_INACCURATE );
+  return !((int)solver_.getStatus() == OSQP_PRIMAL_INFEASIBLE ||
+           (int)solver_.getStatus() == OSQP_PRIMAL_INFEASIBLE_INACCURATE);
 }
 
-void OsqpEigenOpt::setSparseBlock(  Eigen::SparseMatrix<double> &output_matrix, 
-                                    const Eigen::SparseMatrix<double> &input_block,
-                                    uint32_t i, uint32_t j ) 
+void OsqpEigenOpt::setSparseBlock(Eigen::SparseMatrix<double>& output_matrix,
+                                  const Eigen::SparseMatrix<double>& input_block, uint32_t i, uint32_t j)
 {
-  if((input_block.rows() > output_matrix.rows() - i) || (input_block.cols() > output_matrix.cols() - j))
+  if ((input_block.rows() > output_matrix.rows() - i) || (input_block.cols() > output_matrix.cols() - j))
   {
     std::cout << "input_block.cols() = " << input_block.cols() << "\n";
     std::cout << "input_block.rows() = " << input_block.rows() << "\n";
@@ -102,16 +101,16 @@ void OsqpEigenOpt::setSparseBlock(  Eigen::SparseMatrix<double> &output_matrix,
     std::cout << "output_matrix.rows() - j = " << output_matrix.rows() - j << "\n";
     throw std::runtime_error("setSparseBlock: Can't fit block");
   }
-  for (int k=0; k < input_block.outerSize(); ++k)
+  for (int k = 0; k < input_block.outerSize(); ++k)
   {
-    for (Eigen::SparseMatrix<double>::InnerIterator it(input_block,k); it; ++it)
+    for (Eigen::SparseMatrix<double>::InnerIterator it(input_block, k); it; ++it)
     {
       output_matrix.insert(it.row() + i, it.col() + j) = it.value();
     }
   }
 }
 
-void OsqpEigenOpt::setSolverSettings(const OsqpSettings &settings)
+void OsqpEigenOpt::setSolverSettings(const OsqpSettings& settings)
 {
   solver_.settings()->setVerbosity(settings.verbosity);
   solver_.settings()->setAlpha(settings.alpha);
